@@ -1,0 +1,185 @@
+Here is a detailed **Replit AI prompt** to build a React.js application with Tailwind CSS based on your JSON specification for the "RFx Response Builder" screen.
+
+---
+
+**Replit Prompt:**
+
+---
+
+**Build a fully responsive, role-aware React.js web application called “RFx Response Builder” with Tailwind CSS styling and the following features and behaviors:**
+
+---
+
+## 1. Overall Structure & Routing
+
+- **Use React.js functional components.**
+- **Use Tailwind CSS for all styling.** All layouts, colors, spacings, text, hovers, etc. should use Tailwind utility classes.
+- **Use `react-router-dom` for navigation.**
+- The application must support two user roles: `Admin` and `User`. The role (and username) should be hardcoded at login or via mock state.
+- The default/main view is “RFx Response Builder”.
+
+---
+
+## 2. Header Layout
+
+**Implementation:**
+- Sticky header at the very top (`w-full`, fixed height) with:
+  - **Dark background:** bg-[#2C3E50], **white text** via `text-white`
+  - **Centered navigation tabs:** Use a flex row, tabs centered horizontally.
+  - **Tabs list:**
+    - “Dashboard”, “Resume Builder”, “RFx Sections”, “TSR Mapping”, “RFx Response Builder”
+    - Only “RFx Response Builder” is visible to all. Others are visible to Admin only (mock the user role as needed).
+    - Each tab uses:
+      - Padding x/y for click area: e.g. `px-4 py-2`
+      - **Active tab:** Text in `text-[#41C5F2]`, subtle bg highlight (e.g. `bg-[#253647]` on hover or active)
+      - **Inactive tab:** `text-white`, hover changes bg via e.g. `hover:bg-[#32465a]`
+      - **No underline**; visually distinct but not underlined.
+  - **Session/user info (right side):**
+    - "Username" (medium font, e.g. `font-medium`)
+    - "User Role" (small font, muted color, e.g. `text-xs text-gray-300`)
+    - Use flex with spacing to the right (`ml-auto`).
+
+---
+
+## 3. Side Panel (Left Navigation Drawer)
+
+**Functionality:**
+- **Persistent left-side panel** from below the header down to the bottom.
+- A **hamburger icon** (top left) for expand/collapse toggle:
+  - Implement with React state; on click, smoothly animate width between states (`transition-all duration-300`)
+  - **Open:** 25% width on desktop (`w-1/4 min-w-[16rem]`), shows icons and text labels, section headings for documents.
+  - **Closed:** Thin strip (`w-14`), show only icons, no text. When closed, chat workspace should fill 100% width.
+- **Content:**
+  - **Tabs vertically listed:**
+    - “Documents” tab (icon: `document`)
+      - Shows three collapsible sections: "General", "Finance", "HR"
+      - Each may have mock document items (show file icon + filename; click to reference in AI/chat)
+    - “Active History” (icon: `history`) – visible to Admin only
+      - Shows a list of previous conversations (mock data). Click to load selected conversation.
+  - Section headings for the document categories; allow collapse/expand per section (show chevron).
+- **Styling:**
+  - Panel background: dark (`bg-[#253647]`)
+  - Icons: Use Heroicons or Material/Ant icons, minimal style.
+  - Use `hover:bg-[#32465a]` for document list items.
+  - When panel is closed, “chat workspace” resizes to 100% width (otherwise 75%).
+
+---
+
+## 4. Chat Workspace
+
+**Resizes** based on side panel state (`w-3/4` when panel open, `w-full` when closed). Place the following in a column flex layout:
+
+### a. New Chat Button
+
+- Top right: “+” icon button (Ant or Material style, `bg-[#41C5F2]` on hover, `rounded`, `p-2`)
+- On click: clears chat, resets conversation, and shows prompt tiles.
+
+### b. Prompt Tiles
+
+- **Visible on new chat only**. Centered at the top. Grid: 2 rows × 2(–3) columns.
+- Each tile shows:
+  - Title (medium, bold), description (smaller), a **checkbox at the top-left** (use for selection).
+  - Example tiles: "Extract Key Requirements", "Create Compliance Matrix", etc.
+- On select:
+  - Checkbox toggles, input auto-populates with tile prompt, triggers query (mock or integrate into chat).
+- Use Tailwind grid (`grid grid-cols-3 gap-4`, responsive to stack at lower breakpoints).
+
+### c. Messages Area
+
+- **Chat bubble list**, scrollable column. Use the following message bubble styles:
+  - **User:** 
+    - Right aligned, light blue bubble (`bg-[#E3F2FD]`), border in `border-[#41C5F2]`, rounded corners with speech tail.
+  - **Assistant:** 
+    - Left aligned, light gray bubble (`bg-[#F5F5F5]`), border in `border-[#CBCBCB]`.
+    - Supports **streaming responses** (simulate typing animation), optional citations or sections.
+- **Loading indicator**: Animated "pulse" dot(s) or text ("Thinking..." etc.) under chat, when waiting for AI response.
+
+### d. Input Area (Fixed at bottom)
+
+- Row: 
+  - **Text input field** (`flex-grow`), placeholder: "Please enter your message ..."
+  - **Attachment (paperclip) icon**: left side, click to upload document (file input, accept `pdf/docx/txt`). Implements client-side check: file size < 10MB, allowed types.
+  - **Send icon (paper plane):** right side; disables while response is generating. On send, validates non-empty message.
+
+---
+
+## 5. Behaviors & Validations
+
+- **Header tabs**: Clicking switches the main view (if user has permission); use React Router Routes. Tab visibility changes as per role.
+- **Side Panel:**
+  - Hamburger toggles open/closed state.
+  - Expand/collapse document categories; clicking document selects/references it in chat.
+  - “Active History” (Admin): click loads previous conversation.
+  - Side panel animation duration: `transition-all duration-300`
+- **Chat Workspace:**
+  - **New Chat:** clears messages and conversation state, shows prompt tiles.
+  - **Prompt Tile:** On select, tick checkbox, fill chat input, and send to AI.
+  - **Message Sending:** Validate (not empty, not sending), clear after send.
+  - **File Attachment:** Validate type (`.pdf`, `.docx`, `.txt`) and size (<10MB); error if invalid.
+  - **Streaming Assistant:** Simulate loading/typing, show loading pulse.
+- **Responsiveness:**
+  - Full responsiveness mobile → desktop. Side panel collapses entirely to an icon bar on <md breakpoints.
+  - Prompt tiles, chat layout, and documents use grid/stacking on small screens.
+
+---
+
+## 6. Code & Folder Structure
+
+Structure components for reusability and clarity:
+
+- `components/Header.js`
+- `components/SidePanel.js`
+- `components/DocumentsPanel.js`
+- `components/HistoryPanel.js`
+- `components/PromptTiles.js`
+- `components/Chat/ChatWorkspace.js`
+- `components/Chat/ChatInput.js`
+- `components/Chat/MessageBubble.js`
+- `utils/roleUtils.js` (for role checks)
+- `App.js`, `index.js`, `routes.js`
+
+**Apply the following throughout:**
+- Modular components
+- Tailwind breakpoints for responsive design (`md:`, `lg:`, etc.)
+- All icons from Heroicons, Ant Design, or Material (minimalist, modern)
+- Use React state/hooks for UI logic
+- Client-side validations as above (simple, use `useState`, `useEffect`; for forms use `react-hook-form` if field sets grow)
+
+---
+
+**Summary:**
+- Build the “RFx Response Builder” application UI in React.js with full Tailwind CSS styling
+- Implement role-based header tabs, side drawer, and chat workspace (with prompt tiles, file attachment, and streaming AI messages)
+- All navigation, toggles, and user interactivity per the JSON requirements
+- File and chat input validations
+- Responsiveness and clear, modern UI
+
+---
+
+**If any details are ambiguous, prioritize clarity and a modern user experience as guided by Material/Ant minimal UI standards.** 
+
+---
+
+**START CODING THE ABOVE NOW.**
+
+You are a senior UI architect.
+ 
+Your task is to generate a detailed Replit prompt to build a React.js application styled with Tailwind CSS, based on the provided structured JSON.
+ 
+### Requirements:
+1. **UI Design**: Describe the layout, components, and styling using Tailwind CSS classes.
+2. **Behavior**: Include all user interactions (e.g., form submissions, navigation).
+3. **Validations**: Specify client-side validations (e.g., using React hooks or libraries like `react-hook-form`).
+4. **Navigation**: Define how screens transition (e.g., using `react-router-dom`).
+5. **Code Structure**: Ensure the prompt instructs Replit to:
+   - Use React.js for components.
+   - Style components with Tailwind CSS.
+   - Implement responsive design.
+ 
+Use the following structured JSON to generate a Replit AI prompt for building a React.js application with Tailwind CSS:
+ 
+### Instructions:
+1. Design the UI using React.js functional components.
+2. Style all components with Tailwind CSS.
+3. Implement client-side validations.
+4. Use `react-router-dom` for navigation.
